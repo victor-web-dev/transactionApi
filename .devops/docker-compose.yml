@@ -1,0 +1,6 @@
+services:
+  app:
+    image: victor-web-dev/financeapp
+    container_name: "finance-app"
+    ports:
+      - "3001:3001"
