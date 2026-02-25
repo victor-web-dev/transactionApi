@@ -7,14 +7,27 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Init starts the api service
 func Init() {
+
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(
+		collectors.NewGoCollector(),
+		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+
 	http.HandleFunc("GET /health", healthCheckHandler)
 	http.HandleFunc("GET /time", timeHandler)
 	http.HandleFunc("GET /transactions", transaction.GetTransactions)
 	http.HandleFunc("POST /transactions/create", transaction.CreateTransactions)
+
+	//Metrics
+	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 
 	fmt.Println("Listening on port 3001")
 	log.Fatal(http.ListenAndServe(":3001", nil))
