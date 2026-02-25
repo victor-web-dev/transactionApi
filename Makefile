@@ -6,3 +6,6 @@ run-app:
 
 shutdown-app:
 	docker-compose -f .devops/docker-compose.yml down
+
+unit-tests:
+	go test -v -race ./...
